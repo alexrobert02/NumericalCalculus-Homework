@@ -75,7 +75,7 @@ def gauss_seidel(A, b, epsilon=1e-10, max_iterations=1000):
             return None, iterations
         if np.linalg.norm(x_new - x, np.inf) < epsilon:
             break
-        print(f"Iteration {iterations + 1}: {x_new}")  # Printează soluția la fiecare iterație
+        print(f"Iteration {iterations + 1}: {x_new}")
         x = np.copy(x_new)
         iterations += 1
     else:
@@ -137,8 +137,50 @@ def check_solutions():
             print(f"\nSolutia sistemului liniar pentru fisierele a_{i}.txt si b_{i}.txt a întâmpinat probleme.")
 
 
+# Funcție pentru verificarea sumei matricilor
+def check_sum_of_matrices():
+    # Citirea matricilor a, b și aplusb
+    n_a, elements_a = read_sparse_matrix("a.txt")
+    n_b, elements_b = read_sparse_matrix("b.txt")
+
+    n_aplusb, elements_aplusb = read_sparse_matrix("aplusb.txt")
+
+    # Verificăm dacă dimensiunile matricilor sunt compatibile
+    if n_a != n_b or n_b != n_aplusb:
+        print("Dimensiunile matricilor nu sunt compatibile.")
+        return False
+
+    # Inițializăm matricile a, b și aplusb
+    matrix_a = np.zeros((n_a, n_a))
+    matrix_b = np.zeros((n_b, n_b))
+    matrix_aplusb = np.zeros((n_aplusb, n_aplusb))
+
+    # Umplem matricile a, b și aplusb cu elementele corespunzătoare
+    for val, i, j in elements_a:
+        matrix_a[i][j] = val
+    for val, i, j in elements_b:
+        matrix_b[i][j] = val
+    for val, i, j in elements_aplusb:
+        matrix_aplusb[i][j] = val
+
+    # Verificarea condițiilor pentru fiecare element al matricilor
+    for i in range(n_a):
+        for j in range(n_a):
+            if matrix_a[i][j] != 0 and matrix_b[i][j] != 0 and matrix_aplusb[i][j] != 0:
+                if ((matrix_a[i][j] + matrix_b[i][j] != 0 or matrix_aplusb[i][j] != 0) and
+                        (matrix_a[j][i] + matrix_b[j][i] != 0 or matrix_aplusb[j][i] != 0)):
+                    if (matrix_a[i][j] + matrix_b[i][j] != matrix_aplusb[i][j] or
+                            matrix_a[j][i] + matrix_b[j][i] != matrix_aplusb[j][i]):
+                        print(f"Elementele care îndeplinesc condiția: a[{i}][{j}] = {matrix_a[i][j]}, s[{i}][{j}] = {matrix_aplusb[i][j]}")
+                        return False
+
+    print("\nSuma matricilor a și b este egală cu matricea aplusb.")
+    return True
+
+
 def main():
     check_solutions()
+    check_sum_of_matrices()
 
 
 if __name__ == "__main__":
