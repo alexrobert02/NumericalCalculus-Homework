@@ -58,11 +58,11 @@ def cholesky_factorization(A, epsilon):
         for j in range(i + 1):
             s = sum(L[i][k] * L[j][k] for k in range(j))
             if i == j:
-                if A[i][i] - s <= 0:
+                if A[i][i] - s <= epsilon:
                     raise ValueError("Matrix A is not positive definite")
                 L[i][j] = np.sqrt(A[i][i] - s)
             else:
-                if L[j][j] == 0:
+                if L[j][j] == epsilon:
                     raise ValueError("Division by zero encountered")
                 L[i][j] = (1.0 / L[j][j] * (A[i][j] - s))
     return L
@@ -108,9 +108,9 @@ def main():
     V = eigen_values
     print(np.round(V))
 
-    print("\nEigenvectors:")
+    # print("\nEigenvectors:")
     U = eigen_vectors
-    print(U)
+    # print(U)
 
     print("\nNorma || A_init * U - U * V || = ", norm(np.dot(A_init, U), np.dot(U, np.diag(V)), epsilon))
 
